@@ -31,10 +31,84 @@ def assign_npc_hobbies(hobby_type):
     return npc_hobbies
 
 
-
-
 # ----- Player Creator -----
 def name_the_player():
     player_name = input("What is your name? ")
     return player_name
 
+
+def choose_player_traits():
+    print(
+        '''There are 3 different traits that help you on your high school adventure.
+        They are Physique, Focus and Creativity.
+        All clubs have a main trait, and a secondary trait which will help you raise your popularity.
+        Physique is the main trait of the Sports Club, and the Dance Club.
+        Focus is the main trait of the Video Game Club, and the Movie Club.
+        Creativity is the main trait of the Theater Club, and the Arts & Crafts Club
+        You get to start off with 2 points in one trait and 1 point in a second trait.'''
+    )
+
+    def assign_traits():
+        phys_score = 0
+        focus_score = 0
+        creativity_score = 0
+        player_happy = False
+        while player_happy == False:
+            while True:
+                possible_response = {"p": "Physique", "f": "Focus", "c": "Creativity"}
+                response = input(
+                    "Which trait would you like to give 2 points? \nPhysique - (p) \nFocus - (f) \nCreativity - (c) \n")
+                if response in possible_response:
+                    if response == "p":
+                        phys_score = 2
+                        possible_response.pop(response)
+                    elif response == "f":
+                        focus_score = 2
+                        possible_response.pop(response)
+                    elif response == "c":
+                        creativity_score = 2
+                        possible_response.pop(response)
+                    break
+                else:
+                    print("Sorry that's an invalid choice. Try again.")
+            while True:
+                choices_left = list(possible_response.keys())
+                response = input(
+                    "Which trait would you like to give 1 point? \n{first} - ({first_let}) \n{second} - ({second_let})\n".format(
+                        first=possible_response[choices_left[0]], first_let=choices_left[0],
+                        second=possible_response[choices_left[
+                            1]], second_let=choices_left[1])
+                )
+
+                if response in possible_response:
+                    if response == "p":
+                        phys_score = 1
+                    elif response == "f":
+                        focus_score = 1
+                    elif response == "c":
+                        creativity_score = 1
+                    break
+                else:
+                    print("Sorry that's an invalid choice. Try again.")
+            while True:
+                print("You have chosen: \nPhysique - {physique} \nFocus - {focus} \nCreativity - {creativity}".format(
+                    physique=phys_score, focus=focus_score, creativity=creativity_score))
+                happy = input("Are you happy with that choice? \n(y/n) ")
+                possible_response = ["y", "n"]
+                if happy in possible_response:
+                    if happy == "y":
+                        player_happy = True
+                        break
+                    else:
+                        break
+                else:
+                    "Sorry that's an invalid choice. Try again."
+        return phys_score, focus_score, creativity_score
+
+    phys, focus, creativity = assign_traits()
+    player_traits = {"physique": phys, "focus": focus, "creativity": creativity}
+    return player_traits
+
+
+test = choose_player_traits()
+print(test)
