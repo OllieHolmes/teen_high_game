@@ -51,15 +51,6 @@ hobby_list = {"sports":
             "Line dancing",
             "Zumba dancing"
         ],
-    "literature":
-        [
-            "Drama",
-            "Comedy",
-            "Anime",
-            "Horror",
-            "Thriller",
-            "Action"
-        ],
     "movie":
         [
             "Drama",
