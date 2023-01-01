@@ -6,7 +6,6 @@ from random import randint
 # ----- Name Generator -----
 def generate_name(xx=False):
     rand_last = randint(0, len(surnames) - 1)
-    new_name = None
     if xx == False:
         rand_first = randint(0, len(girls_names) - 1)
         new_name = (surnames[rand_last], girls_names[rand_first])
@@ -39,13 +38,15 @@ def name_the_player():
 
 def choose_player_traits():
     print(
-        '''There are 3 different traits that help you on your high school adventure.
-        They are Physique, Focus and Creativity.
+        '''
+        There are 3 different traits that help you on your high school adventure:
+        Physique, Focus and Creativity.
         All clubs have a main trait, and a secondary trait which will help you raise your popularity.
         Physique is the main trait of the Sports Club, and the Dance Club.
         Focus is the main trait of the Video Game Club, and the Movie Club.
         Creativity is the main trait of the Theater Club, and the Arts & Crafts Club
-        You get to start off with 2 points in one trait and 1 point in a second trait.'''
+        You get to start off with 2 points in one trait and 1 point in a second trait.
+        '''
     )
 
     def assign_traits():
@@ -110,5 +111,64 @@ def choose_player_traits():
     return player_traits
 
 
-test = choose_player_traits()
-print(test)
+def choose_starting_hobbies():
+    hobby_list_keys = list(hobby_list.keys())
+    available_choices = []
+    for key in range(len(hobby_list_keys)):
+        rand_hobby = randint(0, len(hobby_list[hobby_list_keys[key]]) - 1)
+        available_choices.append(hobby_list[hobby_list_keys[key]][rand_hobby])
+    print("You also get to start with a hobby that will help you bond with your fellow students. \n")
+
+    def make_decision():
+        happy_with_choice = False
+        while happy_with_choice == False:
+            possible_choices = ["1", "2", "3", "4", "5", "6"]
+            print("Your choices are:")
+            counter = 1
+            for choice in available_choices:
+                print(f"({counter}) - " + choice)
+                counter += 1
+            while True:
+                response = input("Which one do you want to start with? \n( 1 / 2 / 3 / 4 / 5 / 6 ) \n")
+                if response in possible_choices:
+                    if response == "1":
+                        player_hobby = available_choices[0]
+                        break
+                    elif response == "2":
+                        player_hobby = available_choices[1]
+                        break
+                    elif response == "3":
+                        player_hobby = available_choices[2]
+                        break
+                    elif response == "4":
+                        player_hobby = available_choices[3]
+                        break
+                    elif response == "5":
+                        player_hobby = available_choices[4]
+                        break
+                    elif response == "6":
+                        player_hobby = available_choices[5]
+                        break
+                else:
+                    "Sorry that's an invalid response. Try again."
+            while True:
+                possible_choices = ["y","n"]
+                response = input(f"You have chosen {player_hobby}. Are you sure? \n(y/n) \n")
+                if response in possible_choices:
+                    if response == "y":
+                        happy_with_choice = True
+                        break
+                    elif response == "n":
+                        break
+                else:
+                    print("Sorry, that's an invalid choice. Try again.")
+        return player_hobby
+
+    player_hobby = make_decision()
+
+    return player_hobby
+
+if __name__ == "__main__":
+
+    test = choose_starting_hobbies()
+    print(test)

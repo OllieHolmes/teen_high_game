@@ -20,6 +20,7 @@ class Player:
         self.hobbies = "Hobby function"
         self.popularity = 0
 
+test = Student()
 
 class StudentNPC(Student):
     def __init__(self, stats, hobbies):
@@ -33,8 +34,7 @@ class Classroom:
     pass
 
 
-test = StudentNPC("s", "h")
-print()
+
 print(test)
 
 ###################################################
