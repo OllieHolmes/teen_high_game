@@ -2,8 +2,22 @@ from names import boys_names, girls_names, surnames
 from hobbies import hobby_list
 from random import randint
 
+# ----- Text Functions -----
+def new_line(num=1):
+    for n in range(num):
+        print("")
 
-# ----- Name Generator -----
+def simple_divider():
+    print("#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#")
+
+def new_day_divider():
+    print("**********************************************************************************************************")
+    print("------------------------------------------------  NEW DAY  -----------------------------------------------")
+    print("**********************************************************************************************************")
+
+
+
+# ----- NPC Generators -----
 def generate_name(xx=False):
     rand_last = randint(0, len(surnames) - 1)
     if xx == False:
@@ -15,7 +29,6 @@ def generate_name(xx=False):
     return new_name
 
 
-# ----- Hobby Generator -----
 def assign_npc_hobbies(hobby_type):
     npc_hobbies = {"main": [], "secondary": []}
     hobby_list_keys = list(hobby_list.keys())
@@ -28,6 +41,7 @@ def assign_npc_hobbies(hobby_type):
         hobby_num = randint(0, len(hobby_list[hobby_cat]) - 1)
         npc_hobbies["secondary"].append([hobby_cat, hobby_list[hobby_cat][hobby_num]])
     return npc_hobbies
+
 
 
 # ----- Player Creator -----
@@ -170,5 +184,6 @@ def choose_starting_hobbies():
 
 if __name__ == "__main__":
 
-    test = choose_starting_hobbies()
-    print(test)
+    simple_divider()
+    new_line()
+    new_day_divider()
