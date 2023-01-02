@@ -1,4 +1,4 @@
-hobby_list = {"sports":
+hobby_dict = {"sports":
     [
         "Bowling",
         "Dodge-ball",

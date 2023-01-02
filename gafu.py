@@ -1,5 +1,5 @@
 from names import boys_names, girls_names, surnames
-from hobbies import hobby_list
+from hobbies import hobby_dict
 from random import randint
 
 # ----- Text Functions -----
@@ -31,15 +31,15 @@ def generate_name(xx=False):
 
 def assign_npc_hobbies(hobby_type):
     npc_hobbies = {"main": [], "secondary": []}
-    hobby_list_keys = list(hobby_list.keys())
+    hobby_list_keys = list(hobby_dict.keys())
     num_of_hobbies = randint(1, 3)
-    hobby_num = randint(0, len(hobby_list[hobby_type]) - 1)
-    npc_hobbies["main"] = [hobby_type, hobby_list[hobby_type][hobby_num]]
+    hobby_num = randint(0, len(hobby_dict[hobby_type]) - 1)
+    npc_hobbies["main"] = [hobby_type, hobby_dict[hobby_type][hobby_num]]
     for n in range(num_of_hobbies):
-        hobby_cat_num = randint(0, len(hobby_list) - 1)
+        hobby_cat_num = randint(0, len(hobby_dict) - 1)
         hobby_cat = hobby_list_keys[hobby_cat_num]
-        hobby_num = randint(0, len(hobby_list[hobby_cat]) - 1)
-        npc_hobbies["secondary"].append([hobby_cat, hobby_list[hobby_cat][hobby_num]])
+        hobby_num = randint(0, len(hobby_dict[hobby_cat]) - 1)
+        npc_hobbies["secondary"].append([hobby_cat, hobby_dict[hobby_cat][hobby_num]])
     return npc_hobbies
 
 
@@ -126,11 +126,11 @@ def choose_player_traits():
 
 
 def choose_starting_hobbies():
-    hobby_list_keys = list(hobby_list.keys())
+    hobby_list_keys = list(hobby_dict.keys())
     available_choices = []
     for key in range(len(hobby_list_keys)):
-        rand_hobby = randint(0, len(hobby_list[hobby_list_keys[key]]) - 1)
-        available_choices.append(hobby_list[hobby_list_keys[key]][rand_hobby])
+        rand_hobby = randint(0, len(hobby_dict[hobby_list_keys[key]]) - 1)
+        available_choices.append(hobby_dict[hobby_list_keys[key]][rand_hobby])
     print("You also get to start with a hobby that will help you bond with your fellow students. \n")
 
     def make_decision():
