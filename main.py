@@ -3,35 +3,36 @@ import gafu
 from gafu import new_line, simple_divider, new_day_divider
 from hobbies import hobby_dict
 
-
 # ---- Help objects that store static information and npc data
 
-subjects = ({"English": "Creativity", "Math": "Focus", "Science": "Creativity",
-             "Physical Education": "Physique", "Computer Science": "Focus", "Health Studies": "Physique"})
+subject_dict = ({"English": "Creativity", "Math": "Focus", "Science": "Creativity",
+                 "Physical Education": "Physique", "Computer Science": "Focus", "Health Studies": "Physique"})
 
 npc_dict = {"sports": [], "video-games": [], "theater": [], "arts & crafts": [], "dance": [], "literature": [],
             "movie": []}
+
+npc_random_list = []
 
 
 # ---- Main Player Class ----
 
 class Player:
-    def __init__(self):
-        self.name = "Player 1"
-        self.traits = {"physique": 2, "focus": 1, "creativity": 0}
-        self.hobbies = ["Hobby 1", "Hobby 2"]
+    def __init__(self, name, traits, hobby):
+        self.name = name
+        self.traits = traits
+        self.hobbies = [hobby]
 
     popularity = 0
     grades = {"English": 0, "Math": 0, "Science": 0,
-             "Physical Education": 0, "Computer Science": 0, "Health Studies": 0}
+              "Physical Education": 0, "Computer Science": 0, "Health Studies": 0}
 
     def repr_hobbies(self, hobby_list):
         message = ""
         for hobby in hobby_list:
-            if hobby == hobby_list[len(hobby_list) - 1]:
-                message += hobby
+            if hobby[1] == hobby_list[len(hobby_list) - 1][1]:
+                message += hobby[1]
             else:
-                message += hobby + ", "
+                message += hobby[1] + ", "
         return message
 
     def repr_traits(self, traits_dict):
@@ -66,18 +67,21 @@ class Player:
             return
 
         hobby_exist = False
+        hobby_key = ""
         for key, values in hobby_dict.items():
             if hobby in values:
                 hobby_exist = True
-            else:
-                return print("Something went wrong.")
+                hobby_key = key
 
-        if hobby_exist == True:
-            self.hobbies.append(hobby)
+        if hobby_exist:
+            self.hobbies.append([hobby_key, hobby])
             print(f"You've added {hobby} to your list of hobbies. Good job!")
             return
 
-
+    def increase_grade(self, subject, score):
+        if subject in subject_dict:
+            self.grades[subject] += score
+            print(f"Your grades in {subject} has increased.")
 
 
 class Student:
@@ -104,10 +108,6 @@ class Classroom:
     pass
 
 
-test = Player()
-
-
-
 
 ###################################################
 #   Main School Class - Everything happens here   #
@@ -128,7 +128,7 @@ class School:
 
 class Game:
 
-    def run(self):
+    def run():
         print("""
         ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤
           ####### ######  ###### #      #     #     #  #    ####    #     #
@@ -142,5 +142,13 @@ class Game:
                                 The High School Simulator
         ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤""")
 
-# if __name__ == "__main__":
-#     Game.run()
+        player_name = gafu.name_the_player()
+        starting_traits = gafu.choose_starting_traits()
+        starting_hobby = gafu.choose_starting_hobbies()
+
+        player_1 = Player(player_name, starting_traits, starting_hobby)
+
+        print(player_1)
+
+if __name__ == "__main__":
+    Game.run()

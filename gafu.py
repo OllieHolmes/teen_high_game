@@ -2,19 +2,21 @@ from names import boys_names, girls_names, surnames
 from hobbies import hobby_dict
 from random import randint
 
+
 # ----- Text Functions -----
 def new_line(num=1):
     for n in range(num):
         print("")
 
+
 def simple_divider():
     print("#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#")
+
 
 def new_day_divider():
     print("**********************************************************************************************************")
     print("------------------------------------------------  NEW DAY  -----------------------------------------------")
     print("**********************************************************************************************************")
-
 
 
 # ----- NPC Generators -----
@@ -43,14 +45,27 @@ def assign_npc_hobbies(hobby_type):
     return npc_hobbies
 
 
-
 # ----- Player Creator -----
 def name_the_player():
-    player_name = input("What is your name? ")
+    happy_with_choice = False
+    player_name = ""
+    while not happy_with_choice:
+        player_name = input("What is your name? ")
+        possible_response = ["y", "n"]
+        while True:
+            response = input(f"Your name is {player_name}, is that correct? \n(y/n) ")
+            if response in possible_response:
+                if response == "y":
+                    happy_with_choice = True
+                    break
+                elif response == "n":
+                    break
+            else:
+                print("Sorry, that's an invalid choice!")
     return player_name
 
 
-def choose_player_traits():
+def choose_starting_traits():
     print(
         '''
         There are 3 different traits that help you on your high school adventure:
@@ -135,6 +150,7 @@ def choose_starting_hobbies():
 
     def make_decision():
         happy_with_choice = False
+        player_hobby = []
         while happy_with_choice == False:
             possible_choices = ["1", "2", "3", "4", "5", "6"]
             print("Your choices are:")
@@ -146,28 +162,28 @@ def choose_starting_hobbies():
                 response = input("Which one do you want to start with? \n( 1 / 2 / 3 / 4 / 5 / 6 ) \n")
                 if response in possible_choices:
                     if response == "1":
-                        player_hobby = available_choices[0]
+                        player_hobby = [hobby_list_keys[0], available_choices[0]]
                         break
                     elif response == "2":
-                        player_hobby = available_choices[1]
+                        player_hobby = [hobby_list_keys[1], available_choices[1]]
                         break
                     elif response == "3":
-                        player_hobby = available_choices[2]
+                        player_hobby = [hobby_list_keys[2], available_choices[2]]
                         break
                     elif response == "4":
-                        player_hobby = available_choices[3]
+                        player_hobby = [hobby_list_keys[3], available_choices[3]]
                         break
                     elif response == "5":
-                        player_hobby = available_choices[4]
+                        player_hobby = [hobby_list_keys[4], available_choices[4]]
                         break
                     elif response == "6":
-                        player_hobby = available_choices[5]
+                        player_hobby = [hobby_list_keys[5], available_choices[5]]
                         break
                 else:
                     "Sorry that's an invalid response. Try again."
             while True:
-                possible_choices = ["y","n"]
-                response = input(f"You have chosen {player_hobby}. Are you sure? \n(y/n) \n")
+                possible_choices = ["y", "n"]
+                response = input(f"You have chosen {player_hobby[1]}. Are you sure? \n(y/n) \n")
                 if response in possible_choices:
                     if response == "y":
                         happy_with_choice = True
@@ -182,7 +198,10 @@ def choose_starting_hobbies():
 
     return player_hobby
 
+
 if __name__ == "__main__":
+    test = choose_starting_hobbies()
+    print(test)
 
     simple_divider()
     new_line()
