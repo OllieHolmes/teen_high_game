@@ -61,6 +61,7 @@ def assign_npc_hobbies(hobby_type):
     return npc_hobbies
 
 
+
 # ----- Player Creator -----
 def name_the_player():
     happy_with_choice = False
@@ -83,17 +84,17 @@ def name_the_player():
 
 def choose_starting_traits():
     print(
-        '''
-        There are 3 different traits that help you on your high school adventure:
-        Physique, Focus and Creativity.
-        
-        All clubs have a main trait, and a secondary trait which will help you raise your popularity.
-        - Physique is the main trait of the Sports Club, and the Dance Club.
-        - Focus is the main trait of the Video Game Club, and the Movie Club.
-        - Creativity is the main trait of the Theater Club, and the Arts & Crafts Club
-        
-        You get to start off with 2 points in one trait and 1 point in a second trait.
-        '''
+    '''
+    There are 3 different traits that help you on your high school adventure:
+    Physique, Focus and Creativity.
+    
+    All clubs have a main trait, and a secondary trait which will help you raise your popularity.
+    - Physique is the main trait of the Sports Club, and the Dance Club.
+    - Focus is the main trait of the Video Game Club, and the Movie Club.
+    - Creativity is the main trait of the Theater Club, and the Arts & Crafts Club
+    
+    You get to start off with 2 points in one trait and 1 point in a second trait.
+    '''
     )
     read_delay()
 
@@ -219,10 +220,7 @@ def choose_starting_hobbies():
     return player_hobby
 
 
-if __name__ == "__main__":
-    test = choose_starting_hobbies()
-    print(test)
 
-    simple_divider()
-    new_line()
-    new_day_divider()
+
+if __name__ == "__main__":
+    pass
