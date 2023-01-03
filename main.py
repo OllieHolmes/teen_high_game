@@ -1,6 +1,6 @@
 from random import randint
 import gafu
-from gafu import new_line, simple_divider, new_day_divider
+from gafu import new_line, simple_divider, new_day_divider, read_delay
 from hobbies import hobby_dict
 import story
 
@@ -50,6 +50,13 @@ class Player:
                 f"Your traits are {self.repr_traits(traits_dict)}"
                 )
 
+    def display_status(self):
+        print(f"Your hobbies are {self.repr_hobbies(self.hobbies)}.")
+        print(f"Your traits are:")
+        for hobby in self.hobbies:
+            print(f"- {hobby}")
+
+
     # ---- Functions that add functionality to the player
 
     def increase_trait(self, trait, increase=1):
@@ -84,7 +91,6 @@ class Player:
 
 class Student:
     counter = randint(0, 1)
-
     def __init__(self):
         xx = False
         if self.counter % 2 == 0:
@@ -93,10 +99,6 @@ class Student:
             xx = True
         self.name = gafu.generate_name(xx)
         Student.counter += 1
-
-    def __repr__(self):
-        return self.name[1] + ' ' + self.name[0]
-
 
 class StudentNPC(Student):
     def set_popularity(self):
@@ -111,7 +113,10 @@ class StudentNPC(Student):
         self.bad_subject = bad_subject
         self.bad_trait = subject_dict[bad_subject]
         self.hobbies = [h for h in hobbies]
-        self.popularity = 0
+        self.popularity = randint(10, 40)
+
+    def __repr__(self):
+        return self.name[1] + ' ' + self.name[0]
 
 
 ###################################################
@@ -164,7 +169,7 @@ class Game:
              #    #       #      #    # #     #     #  #  #     #   #     #
              #    #       #      #     ##     #     #  #   #   ##   #     #
              #    ######  ###### #      #     #     #  #    ### #   #     #
-        ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤ 
+        ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤
                                 The High School Simulator
         ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤""")
 
@@ -174,27 +179,22 @@ class Game:
 
         # ----- Create the Player Character
         player_name = gafu.name_the_player()
+        story.welcome_to_teen_high(player_name)
         starting_traits = gafu.choose_starting_traits()
         simple_divider()
-        new_line()
         starting_hobby = gafu.choose_starting_hobbies()
         player_1 = Player(player_name, starting_traits, starting_hobby)
 
         print(player_1)
-        gafu.read_delay()
         simple_divider()
 
         # ----- Introduction Message
 
-        story.welcome_to_teen_high(player_1.name)
+        new_day_divider()
+        story.start_of_day(1)
 
 
 game = Game()
 
-# npc_dict[club] = StudentNPC(club)
-
-
 if __name__ == "__main__":
-    print(npc_dict)
-    print(npc_list)
-#    game.run()
+    game.run()
