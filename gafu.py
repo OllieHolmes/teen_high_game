@@ -6,16 +6,13 @@ import keyboard
 
 
 # ----- Time functions
-def read_delay(secs=600) -> int:
-    delay = secs
-
-    start_time = time.time()
+def read_delay():
     new_line()
     print("To continue, press 'Ctrl'")
     while True:
-        elapsed_time = time.time() - start_time
-        if elapsed_time > delay or keyboard.is_pressed("ctrl"):
+        if keyboard.is_pressed("ctrl"):
             new_line()
+            time.sleep(.5)
             break
 
 
@@ -26,13 +23,17 @@ def new_line(num=1):
 
 
 def simple_divider():
+    new_line()
     print("#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#")
+    new_line()
 
 
 def new_day_divider():
+    new_line()
     print("**********************************************************************************************************")
     print("------------------------------------------------  NEW DAY  -----------------------------------------------")
     print("**********************************************************************************************************")
+    new_line()
 
 
 # ----- NPC Generators -----
@@ -166,7 +167,7 @@ def choose_starting_hobbies():
     for key in range(len(hobby_list_keys)):
         rand_hobby = randint(0, len(hobby_dict[hobby_list_keys[key]]) - 1)
         available_choices.append(hobby_dict[hobby_list_keys[key]][rand_hobby])
-    print("        You also get to start with a hobby that will help you bond with your fellow students.")
+    print("    You also get to start with a hobby that will help you bond with your fellow students.")
     read_delay()
 
     def make_decision():
