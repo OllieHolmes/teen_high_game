@@ -4,15 +4,12 @@ from gafu import new_line, simple_divider, new_day_divider
 from hobbies import hobby_dict
 import story
 
-# ---- Help objects that store static information and npc data
+# ---- Help objects that store static information
+
+grades_dict = {"A": 40, "B": 30, "C": 20, "F": 0}
 
 subject_dict = ({"English": "Creativity", "Math": "Focus", "Science": "Creativity",
                  "Physical Education": "Physique", "Computer Science": "Focus", "Health Studies": "Physique"})
-
-npc_dict = {"sports": [], "video-games": [], "theater": [], "arts & crafts": [], "dance": [], "literature": [],
-            "movie": []}
-
-npc_random_list = []
 
 
 # ---- Main Player Class ----
@@ -86,33 +83,61 @@ class Player:
 
 
 class Student:
+    counter = randint(0, 1)
+
     def __init__(self):
-        self.name = gafu.generate_name()
+        xx = False
+        if self.counter % 2 == 0:
+            xx = False
+        else:
+            xx = True
+        self.name = gafu.generate_name(xx)
+        Student.counter += 1
 
     def __repr__(self):
-        return "This is " + self.name[1] + ' ' + self.name[0] + ". They're a student here."
+        return self.name[1] + ' ' + self.name[0]
 
 
 class StudentNPC(Student):
     def set_popularity(self):
         pass
 
-    def __init__(self, hobbies):
+    def __init__(self, club, fav_subject, bad_subject):
+        hobbies = gafu.assign_npc_hobbies(club)
         super().__init__()
-        self.fav_subject = "fav subject"
-        self.bad_subject = "bad subject"
+        self.club = club
+        self.fav_subject = fav_subject
+        self.fav_trait = subject_dict[fav_subject]
+        self.bad_subject = bad_subject
+        self.bad_trait = subject_dict[bad_subject]
         self.hobbies = [h for h in hobbies]
         self.popularity = 0
-
-
-class Classroom:
-    pass
-
 
 
 ###################################################
 #   Main School Class - Everything happens here   #
 ###################################################
+
+# ---- NPC information and Data
+sport_npc_1 = StudentNPC("sports", "Physical Education", "English")
+sport_npc_2 = StudentNPC("sports", "Health Studies", "Math")
+video_game_npc_1 = StudentNPC("video-games", "Computer Science", "English")
+video_game_npc_2 = StudentNPC("video-games", "Science", "Math")
+theater_npc_1 = StudentNPC("theater", "English", "Math")
+theater_npc_2 = StudentNPC("theater", "Science", "Computer Science")
+art_craft_npc_1 = StudentNPC("arts & crafts", "English", "Health Studies")
+art_craft_npc_2 = StudentNPC("arts & crafts", "Science", "Physical Education")
+dance_npc_1 = StudentNPC("dance", "Physical Education", "Math")
+dance_npc_2 = StudentNPC("dance", "Health Studies", "Computer Science")
+movie_npc_1 = StudentNPC("movie", "Computer Science", "Physical Education")
+movie_npc_2 = StudentNPC("movie", "Math", "Health Studies")
+
+npc_dict = {"sports": [sport_npc_1, sport_npc_2], "video-games": [video_game_npc_1, video_game_npc_2],
+            "theater": [theater_npc_1, theater_npc_2], "arts & crafts": [art_craft_npc_1, art_craft_npc_2],
+            "dance": [dance_npc_1, dance_npc_2], "movie": [movie_npc_1, movie_npc_2]}
+
+npc_list = [npc for key, value in npc_dict.items() for npc in value]
+
 
 class School:
 
@@ -129,7 +154,7 @@ class School:
 
 class Game:
 
-    def run():
+    def run(self):
         print("""
         ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤
           ####### ######  ###### #      #     #     #  #    ####    #     #
@@ -145,9 +170,12 @@ class Game:
 
         # ----- The Game Starts Here ----- #
 
+        school = School()
+
         # ----- Create the Player Character
         player_name = gafu.name_the_player()
         starting_traits = gafu.choose_starting_traits()
+        simple_divider()
         new_line()
         starting_hobby = gafu.choose_starting_hobbies()
         player_1 = Player(player_name, starting_traits, starting_hobby)
@@ -156,10 +184,17 @@ class Game:
         gafu.read_delay()
         simple_divider()
 
+        # ----- Introduction Message
+
         story.welcome_to_teen_high(player_1.name)
 
 
+game = Game()
+
+# npc_dict[club] = StudentNPC(club)
+
+
 if __name__ == "__main__":
-    Game.run()
-
-
+    print(npc_dict)
+    print(npc_list)
+#    game.run()
