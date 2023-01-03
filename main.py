@@ -2,6 +2,7 @@ from random import randint
 import gafu
 from gafu import new_line, simple_divider, new_day_divider
 from hobbies import hobby_dict
+import story
 
 # ---- Help objects that store static information and npc data
 
@@ -142,13 +143,23 @@ class Game:
                                 The High School Simulator
         ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤""")
 
+        # ----- The Game Starts Here ----- #
+
+        # ----- Create the Player Character
         player_name = gafu.name_the_player()
         starting_traits = gafu.choose_starting_traits()
+        new_line()
         starting_hobby = gafu.choose_starting_hobbies()
-
         player_1 = Player(player_name, starting_traits, starting_hobby)
 
         print(player_1)
+        gafu.read_delay()
+        simple_divider()
+
+        story.welcome_to_teen_high(player_1.name)
+
 
 if __name__ == "__main__":
     Game.run()
+
+

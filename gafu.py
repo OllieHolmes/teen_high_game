@@ -1,6 +1,22 @@
 from names import boys_names, girls_names, surnames
 from hobbies import hobby_dict
 from random import randint
+import time
+import keyboard
+
+
+# ----- Time functions
+def read_delay(secs=600) -> int:
+    delay = secs
+
+    start_time = time.time()
+    new_line()
+    print("To continue, press 'Ctrl'")
+    while True:
+        elapsed_time = time.time() - start_time
+        if elapsed_time > delay or keyboard.is_pressed("ctrl"):
+            new_line()
+            break
 
 
 # ----- Text Functions -----
@@ -50,8 +66,8 @@ def name_the_player():
     happy_with_choice = False
     player_name = ""
     while not happy_with_choice:
-        player_name = input("What is your name? ")
-        possible_response = ["y", "n"]
+        player_name = input("What is your name? \n")
+        possible_response = [       "y", "n"]
         while True:
             response = input(f"Your name is {player_name}, is that correct? \n(y/n) ")
             if response in possible_response:
@@ -70,13 +86,16 @@ def choose_starting_traits():
         '''
         There are 3 different traits that help you on your high school adventure:
         Physique, Focus and Creativity.
+        
         All clubs have a main trait, and a secondary trait which will help you raise your popularity.
-        Physique is the main trait of the Sports Club, and the Dance Club.
-        Focus is the main trait of the Video Game Club, and the Movie Club.
-        Creativity is the main trait of the Theater Club, and the Arts & Crafts Club
+        - Physique is the main trait of the Sports Club, and the Dance Club.
+        - Focus is the main trait of the Video Game Club, and the Movie Club.
+        - Creativity is the main trait of the Theater Club, and the Arts & Crafts Club
+        
         You get to start off with 2 points in one trait and 1 point in a second trait.
         '''
     )
+    read_delay()
 
     def assign_traits():
         phys_score = 0
@@ -146,7 +165,8 @@ def choose_starting_hobbies():
     for key in range(len(hobby_list_keys)):
         rand_hobby = randint(0, len(hobby_dict[hobby_list_keys[key]]) - 1)
         available_choices.append(hobby_dict[hobby_list_keys[key]][rand_hobby])
-    print("You also get to start with a hobby that will help you bond with your fellow students. \n")
+    print("        You also get to start with a hobby that will help you bond with your fellow students.")
+    read_delay()
 
     def make_decision():
         happy_with_choice = False
