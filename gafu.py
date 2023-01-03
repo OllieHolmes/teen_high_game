@@ -9,12 +9,9 @@ import keyboard
 def read_delay():
     new_line()
     print("To continue, press 'Ctrl'")
-    while True:
-        if keyboard.is_pressed("ctrl"):
-            new_line()
-            time.sleep(.5)
-            break
-
+    keyboard.wait("ctrl")
+    new_line()
+    time.sleep(.25)
 
 # ----- Text Functions -----
 def new_line(num=1):
