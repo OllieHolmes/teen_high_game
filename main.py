@@ -1,3 +1,4 @@
+import time
 from random import randint
 import gafu
 from gafu import new_line, simple_divider, new_day_divider, read_delay
@@ -20,7 +21,7 @@ class Player:
         self.traits = traits
         self.hobbies = [hobby]
 
-    popularity = 0
+    popularity = 50  # ---- TODO Figure out what to do with Popularity
     grades = {"English": 0, "Math": 0, "Science": 0,
               "Physical Education": 0, "Computer Science": 0, "Health Studies": 0}
 
@@ -56,7 +57,6 @@ class Player:
         for hobby in self.hobbies:
             print(f"- {hobby}")
 
-
     # ---- Functions that add functionality to the player
 
     def increase_trait(self, trait, increase=1):
@@ -91,6 +91,7 @@ class Player:
 
 class Student:
     counter = randint(0, 1)
+
     def __init__(self):
         xx = False
         if self.counter % 2 == 0:
@@ -99,6 +100,7 @@ class Student:
             xx = True
         self.name = gafu.generate_name(xx)
         Student.counter += 1
+
 
 class StudentNPC(Student):
     def set_popularity(self):
@@ -114,6 +116,18 @@ class StudentNPC(Student):
         self.bad_trait = subject_dict[bad_subject]
         self.hobbies = [h for h in hobbies]
         self.popularity = randint(10, 40)
+
+    is_friend = False
+
+    def check_if_friends(self, player):
+        if self.is_friend:
+            return True, True
+        else:
+            if self.popularity < player.popularity:
+                return False, True
+            else:
+                return False, False
+
 
     def __repr__(self):
         return self.name[1] + ' ' + self.name[0]
@@ -145,15 +159,63 @@ npc_list = [npc for key, value in npc_dict.items() for npc in value]
 
 
 class School:
+    def __init__(self, player):
+        self.player = player
 
-    def library_event(self, player):
+    def library_event(self):
+        random_npc = npc_list[randint(0, len(npc_list) - 1)]
         # ---- Enter the library
+        new_line()
         print("You come into the library and sit down to study.")
+        print(f"You see {random_npc} sitting at one of the desks, reading a textbook.")
+        new_line()
 
-    def break_event(self, player):
+        def study_session(subject):
+            study_buddy = False
+            asked = False
+
+            while True:
+                response = input(f"Do you want to ask {random_npc} to study with you? \n(y/n) ")
+                possible_answers = ["y", "n"]
+                if response in possible_answers:
+                    if response == "y":  # ---- Player chooses to ask the NPC
+                        print(f"You ask {random_npc} if they would like to study with you.")
+                        asked = True
+                        friends, admire = random_npc.check_if_friends(self.player)
+                        if friends:  # ---- Friends help each other out
+                            print("Since you're good friends, they gladly accept.")
+                            study_buddy = True
+                            break
+                        elif admire: # ---- Your popularity was higher than theirs
+                            print("They wouldn't normally, but your reputation makes them want to get to know you better.")
+                            study_buddy = True
+                            break
+                        else:  # ---- You are shit out of luck
+                            print("They barely look at you, as they pretend like they didn't hear you.")
+                            print("Guess you're on your own.")
+                            read_delay()
+                            break
+                    elif response == "n":
+                        break
+                else:
+                    print("Sorry, that's an invalid choice")
+                    new_line()
+
+            if asked:
+                if study_buddy:
+
+                    pass  # ---- Run a function to check if the study buddy helps
+            else:
+                pass  # ---- You study on your own and get the basic bonus
+
+        study_session("Health Studies")
+
+
+
+    def break_event(self):
         pass
 
-    def cafeteria_event(self, type_of_meal, player):
+    def cafeteria_event(self, type_of_meal):
         pass
 
 
@@ -175,23 +237,35 @@ class Game:
 
         # ----- The Game Starts Here ----- #
 
-        school = School()
+
 
         # ----- Create the Player Character
-        player_name = gafu.name_the_player()
-        story.welcome_to_teen_high(player_name)
-        starting_traits = gafu.choose_starting_traits()
-        simple_divider()
-        starting_hobby = gafu.choose_starting_hobbies()
-        player_1 = Player(player_name, starting_traits, starting_hobby)
+        # player_name = gafu.name_the_player()
+        # story.welcome_to_teen_high(player_name)
+        # starting_traits = gafu.choose_starting_traits()
+        # simple_divider()
+        # starting_hobby = gafu.choose_starting_hobbies()
+        # player_1 = Player(player_name, starting_traits, starting_hobby)  # ---- Instancing the player
+        #
+        # school = School(player_1)  # ---- Instancing the School class, which contains all basic events
+        #
+        # print(player_1)
+        # simple_divider()
+        #
+        #
+        # # ----- Introduction Message
+        #
+        # new_day_divider()
+        # story.start_of_day(1)
 
-        print(player_1)
-        simple_divider()
+        player_test = Player("Steven", {"physique": 4, "focus": 4, "creativity": 4}, ["American Football"])
+        school = School(player_test)
+        read_delay()
+        read_delay()
+        read_delay()
+        read_delay()
 
-        # ----- Introduction Message
-
-        new_day_divider()
-        story.start_of_day(1)
+        school.library_event()
 
 
 game = Game()
