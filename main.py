@@ -86,7 +86,7 @@ class Player:
     def increase_grade(self, subject, score):
         if subject in subject_dict:
             self.grades[subject] += score
-            print(f"Your grades in {subject} has increased.")
+            print(f"**-- Your grades in {subject} has increased {score} points. --**")
 
 
 class Student:
@@ -117,9 +117,16 @@ class StudentNPC(Student):
         self.hobbies = [h for h in hobbies]
         self.popularity = randint(10, 40)
 
+    friend_score = 0
     is_friend = False
 
+    def increase_friend_score(self, score):
+        self.friend_score += score
+
     def check_if_friends(self, player):
+        if self.friend_score >= 10:
+            self.is_friend = True
+
         if self.is_friend:
             return True, True
         else:
@@ -128,6 +135,17 @@ class StudentNPC(Student):
             else:
                 return False, False
 
+    def check_if_fav_subject(self, subject):
+        if subject == self.fav_subject:
+            return True
+        else:
+            return False
+
+    def check_if_bad_subject(self, subject):
+        if subject == self.bad_subject:
+            return True
+        else:
+            return False
 
     def __repr__(self):
         return self.name[1] + ' ' + self.name[0]
@@ -151,10 +169,12 @@ dance_npc_2 = StudentNPC("dance", "Health Studies", "Computer Science")
 movie_npc_1 = StudentNPC("movie", "Computer Science", "Physical Education")
 movie_npc_2 = StudentNPC("movie", "Math", "Health Studies")
 
+# ---- Club NPC Dictionaries ---- #
 npc_dict = {"sports": [sport_npc_1, sport_npc_2], "video-games": [video_game_npc_1, video_game_npc_2],
             "theater": [theater_npc_1, theater_npc_2], "arts & crafts": [art_craft_npc_1, art_craft_npc_2],
             "dance": [dance_npc_1, dance_npc_2], "movie": [movie_npc_1, movie_npc_2]}
 
+# ---- All NPCs in a single list for randomizing during events ---- #
 npc_list = [npc for key, value in npc_dict.items() for npc in value]
 
 
@@ -164,11 +184,53 @@ class School:
 
     def library_event(self):
         random_npc = npc_list[randint(0, len(npc_list) - 1)]
+        subject = ""
         # ---- Enter the library
         new_line()
         print("You come into the library and sit down to study.")
-        print(f"You see {random_npc} sitting at one of the desks, reading a textbook.")
         new_line()
+        picked_subject = False
+        while not picked_subject:
+            possible_answers = ["1", "2", "3", "4", "5", "6"]
+            possible_subjects = [key for key in subject_dict.keys()]
+            while True:
+                print("Which subject would you like to study?")
+                counter = 1
+                for sub in possible_subjects:
+                    print(f"{sub} - ({counter})")
+                    counter += 1
+                print("( 1 / 2 / 3 / 4 / 5 / 6 )")
+                response = input("")
+                if response in possible_answers:
+                    if response == "1":
+                        subject = possible_subjects[0]
+                        picked_subject = True
+                        break
+                    elif response == "2":
+                        subject = possible_subjects[1]
+                        picked_subject = True
+                        break
+                    elif response == "3":
+                        subject = possible_subjects[2]
+                        picked_subject = True
+                        break
+                    elif response == "4":
+                        subject = possible_subjects[3]
+                        picked_subject = True
+                        break
+                    elif response == "5":
+                        subject = possible_subjects[4]
+                        picked_subject = True
+                        break
+                    elif response == "6":
+                        subject = possible_subjects[5]
+                        picked_subject = True
+                        break
+                else:
+                    print("Sorry, that was an invalid response. Try again.")
+
+        new_line()
+        print(f"You see {random_npc} sitting at one of the desks, reading a textbook.")
 
         def study_session(subject):
             study_buddy = False
@@ -186,8 +248,9 @@ class School:
                             print("Since you're good friends, they gladly accept.")
                             study_buddy = True
                             break
-                        elif admire: # ---- Your popularity was higher than theirs
-                            print("They wouldn't normally, but your reputation makes them want to get to know you better.")
+                        elif admire:  # ---- Your popularity was higher than theirs
+                            print(
+                                "They wouldn't normally, but your reputation makes them want to get to know you better.")
                             study_buddy = True
                             break
                         else:  # ---- You are shit out of luck
@@ -201,16 +264,34 @@ class School:
                     print("Sorry, that's an invalid choice")
                     new_line()
 
+            read_delay()
             if asked:
                 if study_buddy:
+                    is_fav_subject = random_npc.check_if_fav_subject(subject)
+                    is_bad_subject = random_npc.check_if_bad_subject(subject)
+                    if is_fav_subject:
+                        print(
+                            f"{random_npc} has a natural passion for {subject}, and helps you grasp more of the knowledge.")
+                        print("You both bonded over the experience!")
+                        self.player.increase_grade(subject, 12)
+                        random_npc.increase_friend_score(6)
+                    elif is_bad_subject:
+                        print(f"Turns out {subject} isn't {random_npc}'s best subject. Actually it's their worst.")
+                        print("You both struggle to get through the textbook, but were able to use flash cards effectively.")
+                        print("You kinda bonded over the experience...")
+                        self.player.increase_grade(subject, 7)
+                        random_npc.increase_friend_score(2)
+                    else:
+                        print(f"You study the {subject} textbook together, and {random_npc} helps you memorize more than you normally do.")
+                        print("They like you a bit more!")
+                        self.player.increase_grade(subject, 10)
+                        random_npc.increase_friend_score(4)
 
-                    pass  # ---- Run a function to check if the study buddy helps
             else:
-                pass  # ---- You study on your own and get the basic bonus
+                print("You find a quiet part of the library and open up your textbooks. It's a slow read.")
+                self.player.increase_grade(subject, 5)
 
-        study_session("Health Studies")
-
-
+        study_session(subject)
 
     def break_event(self):
         pass
@@ -237,8 +318,6 @@ class Game:
 
         # ----- The Game Starts Here ----- #
 
-
-
         # ----- Create the Player Character
         # player_name = gafu.name_the_player()
         # story.welcome_to_teen_high(player_name)
@@ -260,9 +339,6 @@ class Game:
 
         player_test = Player("Steven", {"physique": 4, "focus": 4, "creativity": 4}, ["American Football"])
         school = School(player_test)
-        read_delay()
-        read_delay()
-        read_delay()
         read_delay()
 
         school.library_event()
