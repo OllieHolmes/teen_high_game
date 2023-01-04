@@ -32,6 +32,10 @@ def new_day_divider():
     print("**********************************************************************************************************")
     new_line()
 
+def invalid_response():
+    print("Sorry, that's an invalid response. Try again.")
+    new_line()
+
 
 # ----- NPC Generators -----
 def generate_name(xx=False):
