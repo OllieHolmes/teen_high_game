@@ -1,7 +1,7 @@
 import time
 from random import randint
 import gafu
-from gafu import new_line, simple_divider, new_day_divider, read_delay
+from gafu import new_line, simple_divider, new_day_divider, read_delay, invalid_response
 from hobbies import hobby_dict
 import story
 
@@ -21,7 +21,7 @@ class Player:
         self.traits = traits
         self.hobbies = [hobby]
 
-    popularity = 50  # ---- TODO Figure out what to do with Popularity
+    popularity = 0  # ---- TODO Figure out what to do with Popularity
     grades = {"English": 0, "Math": 0, "Science": 0,
               "Physical Education": 0, "Computer Science": 0, "Health Studies": 0}
 
@@ -61,6 +61,10 @@ class Player:
 
     def increase_trait(self, trait, increase=1):
         self.traits[trait.lower()] += increase
+        plural = ""
+        if increase > 1:
+            plural ="s"
+        print(f"**-- Your {trait} has increased {increase} point{plural}. --**")
 
     def decrease_trait(self, trait, decrease=1):
         self.traits[trait.lower()] -= decrease
@@ -151,10 +155,6 @@ class StudentNPC(Student):
         return self.name[1] + ' ' + self.name[0]
 
 
-###################################################
-#   Main School Class - Everything happens here   #
-###################################################
-
 # ---- NPC information and Data
 sport_npc_1 = StudentNPC("sports", "Physical Education", "English")
 sport_npc_2 = StudentNPC("sports", "Health Studies", "Math")
@@ -178,63 +178,28 @@ npc_dict = {"sports": [sport_npc_1, sport_npc_2], "video-games": [video_game_npc
 npc_list = [npc for key, value in npc_dict.items() for npc in value]
 
 
+###################################################
+#   Main School Class - Everything happens here   #
+###################################################
+
 class School:
     def __init__(self, player):
         self.player = player
 
+    skipping_class = False
+
+    def classroom_event(self, subject):
+        pass
+
     def library_event(self):
         random_npc = npc_list[randint(0, len(npc_list) - 1)]
         subject = ""
-        # ---- Enter the library
-        new_line()
-        print("You come into the library and sit down to study.")
-        new_line()
-        picked_subject = False
-        while not picked_subject:
-            possible_answers = ["1", "2", "3", "4", "5", "6"]
-            possible_subjects = [key for key in subject_dict.keys()]
-            while True:
-                print("Which subject would you like to study?")
-                counter = 1
-                for sub in possible_subjects:
-                    print(f"{sub} - ({counter})")
-                    counter += 1
-                print("( 1 / 2 / 3 / 4 / 5 / 6 )")
-                response = input("")
-                if response in possible_answers:
-                    if response == "1":
-                        subject = possible_subjects[0]
-                        picked_subject = True
-                        break
-                    elif response == "2":
-                        subject = possible_subjects[1]
-                        picked_subject = True
-                        break
-                    elif response == "3":
-                        subject = possible_subjects[2]
-                        picked_subject = True
-                        break
-                    elif response == "4":
-                        subject = possible_subjects[3]
-                        picked_subject = True
-                        break
-                    elif response == "5":
-                        subject = possible_subjects[4]
-                        picked_subject = True
-                        break
-                    elif response == "6":
-                        subject = possible_subjects[5]
-                        picked_subject = True
-                        break
-                else:
-                    print("Sorry, that was an invalid response. Try again.")
-
-        new_line()
-        print(f"You see {random_npc} sitting at one of the desks, reading a textbook.")
 
         def study_session(subject):
             study_buddy = False
             asked = False
+            penalty = 0
+            penalty_msg = ""
 
             while True:
                 response = input(f"Do you want to ask {random_npc} to study with you? \n(y/n) ")
@@ -253,10 +218,11 @@ class School:
                                 "They wouldn't normally, but your reputation makes them want to get to know you better.")
                             study_buddy = True
                             break
-                        else:  # ---- You are shit out of luck
+                        else:  # ---- You are shit out of luck and lose time
                             print("They barely look at you, as they pretend like they didn't hear you.")
+                            penalty = 2
+                            penalty_msg = f"Your focus is hurt by {random_npc}'s rejection."
                             print("Guess you're on your own.")
-                            read_delay()
                             break
                     elif response == "n":
                         break
@@ -273,25 +239,101 @@ class School:
                         print(
                             f"{random_npc} has a natural passion for {subject}, and helps you grasp more of the knowledge.")
                         print("You both bonded over the experience!")
-                        self.player.increase_grade(subject, 12)
-                        random_npc.increase_friend_score(6)
+                        self.player.increase_grade(subject, 10)
+                        random_npc.increase_friend_score(3)
                     elif is_bad_subject:
                         print(f"Turns out {subject} isn't {random_npc}'s best subject. Actually it's their worst.")
-                        print("You both struggle to get through the textbook, but were able to use flash cards effectively.")
-                        print("You kinda bonded over the experience...")
-                        self.player.increase_grade(subject, 7)
+                        print(
+                            "You both struggle to get through the textbook, but were able to use flash cards effectively.")
+                        print("You bond a bit over the failure...")
+                        self.player.increase_grade(subject, 4)
                         random_npc.increase_friend_score(2)
                     else:
-                        print(f"You study the {subject} textbook together, and {random_npc} helps you memorize more than you normally do.")
+                        print(
+                            f"You study the {subject} textbook together, and {random_npc} helps you memorize more than you normally do.")
                         print("They like you a bit more!")
-                        self.player.increase_grade(subject, 10)
-                        random_npc.increase_friend_score(4)
-
+                        self.player.increase_grade(subject, 7)
+                        random_npc.increase_friend_score(2)
+                else:
+                    print("You find a quiet part of the library and open up your textbooks. It's a slow read.")
+                    print(penalty_msg)
+                    self.player.increase_grade(subject, 5 - penalty)
             else:
                 print("You find a quiet part of the library and open up your textbooks. It's a slow read.")
                 self.player.increase_grade(subject, 5)
 
-        study_session(subject)
+        library_event = 0
+        # ---- Enter the library
+        new_line()
+        print("You come into the library. It has a calm and quiet atmosphere.")
+        new_line()
+        while True:
+            possible_answers = ["1", "2"]
+            print("Do you want to study or work on your focus? \n(1) - Study Session \n(2) - Work on Focus")
+            response = input("")
+            if response in possible_answers:
+                if response == "1":
+                    library_event = 1
+                    break
+                elif response == "2":
+                    library_event = 2
+                    break
+            else:
+                invalid_response()
+            #  ---- Study Session or Raise Focus trait
+        if library_event == 1:  # ---- Study Session Event
+            picked_subject = False
+            while not picked_subject:
+                possible_answers = ["1", "2", "3", "4", "5", "6"]
+                possible_subjects = [key for key in subject_dict.keys()]
+                while True:
+                    print("Which subject would you like to study?")
+                    counter = 1
+                    for sub in possible_subjects:
+                        print(f"{sub} - ({counter})")
+                        counter += 1
+                    print("( 1 / 2 / 3 / 4 / 5 / 6 )")
+                    response = input("")
+                    if response in possible_answers:
+                        if response == "1":
+                            subject = possible_subjects[0]
+                            picked_subject = True
+                            break
+                        elif response == "2":
+                            subject = possible_subjects[1]
+                            picked_subject = True
+                            break
+                        elif response == "3":
+                            subject = possible_subjects[2]
+                            picked_subject = True
+                            break
+                        elif response == "4":
+                            subject = possible_subjects[3]
+                            picked_subject = True
+                            break
+                        elif response == "5":
+                            subject = possible_subjects[4]
+                            picked_subject = True
+                            break
+                        elif response == "6":
+                            subject = possible_subjects[5]
+                            picked_subject = True
+                            break
+                    else:
+                        print("Sorry, that was an invalid response. Try again.")
+                        new_line()
+                        time.sleep(1)
+
+            new_line()
+            print(f"You see {random_npc} sitting at one of the desks, reading a textbook.")
+            study_session(subject)  # ---- Starts Study Session Event
+
+        elif library_event == 2:  # ---- Raise Focus trait Event
+            print("You pick out a book from the self-help section.")
+            if not self.skipping_class:
+                self.player.increase_trait("Focus", 1)
+            elif self.skipping_class:
+                self.player.increase_trait("Focus", 2)
 
     def break_event(self):
         pass
@@ -337,11 +379,11 @@ class Game:
         # new_day_divider()
         # story.start_of_day(1)
 
-        player_test = Player("Steven", {"physique": 4, "focus": 4, "creativity": 4}, ["American Football"])
-        school = School(player_test)
+        test_player = Player("Steven", {"physique": 4, "focus": 4, "creativity": 4}, ["American Football"])
+        school = School(test_player)
         read_delay()
 
-        school.library_event()
+        school.classroom_event("Math")
 
 
 game = Game()
