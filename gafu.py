@@ -222,7 +222,22 @@ def choose_starting_hobbies():
     return player_hobby
 
 
+# ----- Game Functions -----
+def popularity_check(player, npc):
+    popularity_score = player.popularity * 10
+    for hobby in player.hobbies:
+        if hobby in npc.hobbies:
+            popularity_score += 25
+            print("Found")
 
+    randomizer = randint(1, 99) + npc.popularity
+    if randomizer > 100:
+        randomizer = 99
+
+    if randomizer <= popularity_score:
+        return True
+    else:
+        return False
 
 if __name__ == "__main__":
     pass
