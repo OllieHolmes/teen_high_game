@@ -498,7 +498,6 @@ class School:
     def break_event(self):
         pass
 
-
 class Game:
 
     def run(self):
