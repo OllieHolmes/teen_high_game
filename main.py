@@ -9,8 +9,8 @@ import story
 
 grades_dict = {"A": 40, "B": 30, "C": 20, "F": 0}
 
-subject_dict = ({"English": "Creativity", "Math": "Focus", "Science": "Creativity",
-                 "Physical Education": "Physique", "Computer Science": "Focus", "Health Studies": "Physique"})
+subject_dict = {"English": "Creativity", "Math": "Focus", "Science": "Creativity",
+                "Physical Education": "Physique", "Computer Science": "Focus", "Health Studies": "Physique"}
 
 
 # ---- Main Player Class ----
@@ -21,7 +21,7 @@ class Player:
         self.traits = traits
         self.hobbies = [hobby]
 
-    popularity = 0  # ---- TODO Figure out what to do with Popularity
+    popularity = 50  # ---- TODO Figure out what to do with Popularity
     grades = {"English": 0, "Math": 0, "Science": 0,
               "Physical Education": 0, "Computer Science": 0, "Health Studies": 0}
 
@@ -63,7 +63,7 @@ class Player:
         self.traits[trait.lower()] += increase
         plural = ""
         if increase > 1:
-            plural ="s"
+            plural = "s"
         print(f"**-- Your {trait} has increased {increase} point{plural}. --**")
 
     def decrease_trait(self, trait, decrease=1):
@@ -107,22 +107,54 @@ class Student:
 
 
 class StudentNPC(Student):
-    def set_popularity(self):
-        pass
+    popularity_list = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
     def __init__(self, club, fav_subject, bad_subject):
         hobbies = gafu.assign_npc_hobbies(club)
+        rand_popularity = randint(0, len(self.popularity_list) - 1)
         super().__init__()
         self.club = club
         self.fav_subject = fav_subject
         self.fav_trait = subject_dict[fav_subject]
         self.bad_subject = bad_subject
         self.bad_trait = subject_dict[bad_subject]
-        self.hobbies = [h for h in hobbies]
-        self.popularity = randint(10, 40)
+        self.hobbies = [hobbies["main"][1]] + [value[1] for value in hobbies["secondary"]]
+        self.advanced_hobbies = hobbies
+        self.popularity = self.popularity_list.pop(rand_popularity)
+        self.clue_list = []
 
     friend_score = 0
     is_friend = False
+
+    def add_clue(self, clue):
+        hobby_reference = [x for key, value in hobby_dict.items() for x in value]
+        if clue in subject_dict:
+            if clue + " +" in self.clue_list or clue + " -" in self.clue_list:
+                return True
+            else:
+                if clue == self.fav_subject:
+                    self.clue_list.insert(0, clue + " +")
+                    print(f"**-- You discovered that {self.name[1]} is good at {clue} --**")
+                elif clue == self.bad_subject:
+                    self.clue_list.insert(0, clue + " -")
+                    print(f"**-- You discovered that {self.name[1]} is bad at {clue} --**")
+        elif clue in hobby_reference:
+            if clue in self.hobbies:
+                done = False
+                counter = 0
+                check_clue = self.hobbies[counter]
+                while not done:
+                    if check_clue in self.clue_list:
+                        counter += 1
+                        try:
+                            check_clue = self.hobbies[counter]
+                        except IndexError:
+                            print(f"Looks like you already know all of {self.name[1]}'s hobbies.")
+                            done = True
+                    else:
+                        self.clue_list.insert(-1, check_clue)
+                        print(f"**-- You discovered that {self.name[1]} likes {check_clue} --**")
+                        done = True
 
     def increase_friend_score(self, score):
         self.friend_score += score
@@ -152,7 +184,13 @@ class StudentNPC(Student):
             return False
 
     def __repr__(self):
-        return self.name[1] + ' ' + self.name[0]
+        clues = ""
+        for clue in self.clue_list:
+            clues += f"({clue}), "
+        clue_message = ""
+        if self.clue_list != []:
+            clue_message = " [" + clues + "]"
+        return self.name[1] + ' ' + self.name[0] + clue_message
 
 
 # ---- NPC information and Data
@@ -188,9 +226,116 @@ class School:
 
     skipping_class = False
 
-    def classroom_event(self, subject):
-        pass
+    # ---- Put NPCs into Classrooms
+    english_group = []
+    math_group = []
+    science_group = []
+    pe_group = []
+    cs_group = []
+    health_group = []
+    all_class_groups = [english_group, math_group, science_group, pe_group, cs_group, health_group]
+    all_npcs_sorted = list(npc_list)
+    xyz = list(npc_list)
+    for group in all_class_groups:
+        rand_num = randint(0, len(all_npcs_sorted) - 1)
+        group.append(all_npcs_sorted.pop(rand_num))
+        rand_num = randint(0, len(all_npcs_sorted) - 1)
+        group.append(all_npcs_sorted.pop(rand_num))
+    for i in range(len(all_class_groups)):
+        rand_student = randint(0, 1)
+        all_class_groups[i].append(all_class_groups[-(i + 1)][rand_student])
+    class_by_subject = {"English": english_group, "Math": math_group, "Science": science_group,
+                        "Physical Education": pe_group, "Computer Science": cs_group, "Health Studies": health_group}
 
+    # ---- Finished
+    def classroom_event(self, subject):
+        # print message, entering the classroom
+        classroom = self.class_by_subject[subject]
+        print(f"            #######################  {subject} Class  #########################")
+        new_line()
+        print("You enter the classroom and you see that most tables are full.")
+        print("There are 4 tables with open seats.")
+        new_line()
+        print(
+            f"Do you want to sit next to \n(1) {classroom[0]} \n(2) {classroom[1]} \n(3) {classroom[2]} \n(4) sit by yourself?")
+        seat = ""
+        # --- Choose seat ---- #
+        while True:
+            possible_answers = ["1", "2", "3", "4"]
+            response = input("( 1 / 2 / 3 / 4 ) \n")
+            if response in possible_answers:
+                if response == "1":
+                    seat = classroom[0]
+                    break
+                elif response == "2":
+                    seat = classroom[1]
+                    break
+                elif response == "3":
+                    seat = classroom[2]
+                    break
+                elif response == "4":
+                    seat = "alone"
+                    break
+            else:
+                invalid_response()
+
+        # ---- Checks if the subject is one of the NPCs fav or bad subject ---- #
+        if response != "4":
+            print(f"You sit down next to {seat.name[1]}.")
+            if seat.is_friend:
+                print(
+                    "As you take a seat next to them, they visibly relax and it is clear that they are happy that you chose to sit with them.")
+            else:
+                print("They move over a bit as you sit down, as to not sit too close.")
+
+            if subject == seat.fav_subject:
+                print(f"You can tell that {seat.name[1]} is passionate about {subject}")
+                new_line()
+                clue_found = seat.add_clue(subject)
+                print(f"{seat.name[1]} helps you out throughout the class, and you feel smarter when class is over.")
+                new_line()
+                if clue_found:
+                    pass
+                else:
+                    self.player.increase_trait(subject_dict[subject], 1)
+                self.player.increase_grade(subject, 7)
+            elif subject == seat.bad_subject:
+                print(f"{seat.name[1]} is clearly not great at {subject}.")
+                seat.add_clue(subject)
+                new_line()
+                print("They struggle throughout the whole class disrupting your focus.")
+                self.player.increase_grade(subject, 3)
+            else:
+                print(f"You listen to the lecture and work with {seat.name[1]}.")
+                seat.add_clue(subject)
+                new_line()
+                print(f"It's just a regular {subject} class.")
+                self.player.increase_grade(subject, 5)
+
+            if self.player.popularity > seat.popularity:
+                new_line()
+                print(f"After the class {seat.name[1]} comes up and chats for a bit.")
+                while True:
+                    response = input("Do you want to stay and chat with them? \n(y/n) ")
+                    possible_answers = ["y", "n"]
+                    if response in possible_answers:
+                        if response == "y":
+                            print(
+                                f"You stay and talk for a bit about your hobbies. You feel closer to {seat.name[1]} {seat.name[0]}.")
+                            seat.increase_friend_score(5)
+                            seat.add_clue(seat.hobbies[0])
+                            break
+        else:
+            print("You're in luck, there's one empty table, and you snag it.")
+            print("You focus all of your attention on the lecture, and finish up all the workbook questions with time to spare.")
+            print("You decide to even do a few extra credit questions.")
+            self.player.increase_grade(subject, 8)
+
+
+        read_delay()
+        simple_divider()
+
+    # ---- Finished ++++++
     def library_event(self):
         random_npc = npc_list[randint(0, len(npc_list) - 1)]
         subject = ""
@@ -206,7 +351,7 @@ class School:
                 possible_answers = ["y", "n"]
                 if response in possible_answers:
                     if response == "y":  # ---- Player chooses to ask the NPC
-                        print(f"You ask {random_npc} if they would like to study with you.")
+                        print(f"You ask {random_npc.name[1]} if they would like to study with you.")
                         asked = True
                         friends, admire = random_npc.check_if_friends(self.player)
                         if friends:  # ---- Friends help each other out
@@ -221,7 +366,7 @@ class School:
                         else:  # ---- You are shit out of luck and lose time
                             print("They barely look at you, as they pretend like they didn't hear you.")
                             penalty = 2
-                            penalty_msg = f"Your focus is hurt by {random_npc}'s rejection."
+                            penalty_msg = f"Your focus is hurt by {random_npc.name[1]}'s rejection."
                             print("Guess you're on your own.")
                             break
                     elif response == "n":
@@ -237,20 +382,27 @@ class School:
                     is_bad_subject = random_npc.check_if_bad_subject(subject)
                     if is_fav_subject:
                         print(
-                            f"{random_npc} has a natural passion for {subject}, and helps you grasp more of the knowledge.")
+                            f"{random_npc.name[1]} has a natural passion for {subject}, and helps you grasp more of the knowledge.")
+                        clue_found = random_npc.add_clue(subject)
                         print("You both bonded over the experience!")
+                        if clue_found:
+                            pass
+                        else:
+                            self.player.increase_trait(subject_dict[subject], 1)
                         self.player.increase_grade(subject, 10)
                         random_npc.increase_friend_score(3)
                     elif is_bad_subject:
-                        print(f"Turns out {subject} isn't {random_npc}'s best subject. Actually it's their worst.")
+                        print(
+                            f"Turns out {subject} isn't {random_npc.name[1]}'s best subject. Actually it's their worst.")
                         print(
                             "You both struggle to get through the textbook, but were able to use flash cards effectively.")
+                        random_npc.add_clue(subject)
                         print("You bond a bit over the failure...")
                         self.player.increase_grade(subject, 4)
                         random_npc.increase_friend_score(2)
                     else:
                         print(
-                            f"You study the {subject} textbook together, and {random_npc} helps you memorize more than you normally do.")
+                            f"You study the {subject} textbook together, and {random_npc.name[1]} helps you memorize more than you normally do.")
                         print("They like you a bit more!")
                         self.player.increase_grade(subject, 7)
                         random_npc.increase_friend_score(2)
@@ -335,6 +487,8 @@ class School:
             elif self.skipping_class:
                 self.player.increase_trait("Focus", 2)
 
+        read_delay()
+
     def break_event(self):
         pass
 
@@ -381,9 +535,18 @@ class Game:
 
         test_player = Player("Steven", {"physique": 4, "focus": 4, "creativity": 4}, ["American Football"])
         school = School(test_player)
-        read_delay()
+
+        test_list = gafu.assign_npc_hobbies("sports")
 
         school.classroom_event("Math")
+        school.classroom_event("Science")
+        school.classroom_event("Computer Science")
+        school.classroom_event("English")
+        school.classroom_event("Health Studies")
+        school.classroom_event("Science")
+        school.classroom_event("Math")
+        school.classroom_event("English")
+        school.classroom_event("Computer Science")
 
 
 game = Game()
