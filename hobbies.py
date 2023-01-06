@@ -53,11 +53,11 @@ hobby_dict = {"sports":
         ],
     "movie":
         [
-            "Drama",
-            "Comedy",
+            "Drama movies",
+            "Comedy movies",
             "Anime",
-            "Horror",
-            "Thriller",
-            "Action"
+            "Horror movies",
+            "Thriller movies",
+            "Action movies"
         ]
 }
