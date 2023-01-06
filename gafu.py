@@ -49,7 +49,7 @@ def generate_name(xx=False):
     return new_name
 
 
-def assign_npc_hobbies(hobby_type):
+def assign_npc_hobbies(hobby_type):  # TODO ----- In rare cases the secondary hobby can repeat
     npc_hobbies = {"main": [], "secondary": []}
     hobby_list_keys = list(hobby_dict.keys())
     num_of_hobbies = randint(1, 3)
