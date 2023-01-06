@@ -247,9 +247,8 @@ class School:
     class_by_subject = {"English": english_group, "Math": math_group, "Science": science_group,
                         "Physical Education": pe_group, "Computer Science": cs_group, "Health Studies": health_group}
 
-    # ---- Finished
+    # ---- Finished ++++++
     def classroom_event(self, subject):
-        # print message, entering the classroom
         classroom = self.class_by_subject[subject]
         print(f"            #######################  {subject} Class  #########################")
         new_line()
@@ -327,10 +326,10 @@ class School:
                             break
         else:
             print("You're in luck, there's one empty table, and you snag it.")
-            print("You focus all of your attention on the lecture, and finish up all the workbook questions with time to spare.")
+            print(
+                "You focus all of your attention on the lecture, and finish up all the workbook questions with time to spare.")
             print("You decide to even do a few extra credit questions.")
             self.player.increase_grade(subject, 8)
-
 
         read_delay()
         simple_divider()
@@ -489,10 +488,14 @@ class School:
 
         read_delay()
 
-    def break_event(self):
-        pass
-
+    # ---- Not Finished
     def cafeteria_event(self, type_of_meal):
+        popular = [(npc, npc.popularity) for npc in npc_list]
+        most_popular = sorted(popular, key=lambda x: x[1], reverse=True)
+        print(most_popular)
+
+    # ---- Not Started
+    def break_event(self):
         pass
 
 
@@ -538,15 +541,7 @@ class Game:
 
         test_list = gafu.assign_npc_hobbies("sports")
 
-        school.classroom_event("Math")
-        school.classroom_event("Science")
-        school.classroom_event("Computer Science")
-        school.classroom_event("English")
-        school.classroom_event("Health Studies")
-        school.classroom_event("Science")
-        school.classroom_event("Math")
-        school.classroom_event("English")
-        school.classroom_event("Computer Science")
+        school.cafeteria_event("Lunch")
 
 
 game = Game()
