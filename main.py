@@ -13,15 +13,14 @@ subject_dict = {"English": "Creativity", "Math": "Focus", "Science": "Creativity
                 "Physical Education": "Physique", "Computer Science": "Focus", "Health Studies": "Physique"}
 
 
-# ---- Main Player Class ----
-
+# ---- Player & NPC Classes ----
 class Player:
     def __init__(self, name, traits, hobby):
         self.name = name
         self.traits = traits
         self.hobbies = [hobby]
 
-    popularity = 50  # ---- TODO Figure out what to do with Popularity
+    popularity = 4  # ---- TODO Figure out what to do with Popularity
     grades = {"English": 0, "Math": 0, "Science": 0,
               "Physical Education": 0, "Computer Science": 0, "Health Studies": 0}
 
@@ -166,7 +165,7 @@ class StudentNPC(Student):
         if self.is_friend:
             return True, True
         else:
-            if self.popularity < player.popularity:
+            if gafu.popularity_check(player, self):
                 return False, True
             else:
                 return False, False
@@ -493,6 +492,8 @@ class School:
         popular = [(npc, npc.popularity) for npc in npc_list]
         most_popular = sorted(popular, key=lambda x: x[1], reverse=True)
         print(most_popular)
+        print(gafu.popularity_check(self.player, sport_npc_1))
+
 
     # ---- Not Started
     def break_event(self):
@@ -540,7 +541,7 @@ class Game:
 
         test_list = gafu.assign_npc_hobbies("sports")
 
-        school.cafeteria_event("Lunch")
+        school.library_event()
 
 
 game = Game()
