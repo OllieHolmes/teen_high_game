@@ -13,6 +13,7 @@ def read_delay():
     new_line()
     time.sleep(.25)
 
+
 # ----- Text Functions -----
 def new_line(num=1):
     for n in range(num):
@@ -31,6 +32,7 @@ def new_day_divider():
     print("------------------------------------------------  NEW DAY  -----------------------------------------------")
     print("**********************************************************************************************************")
     new_line()
+
 
 def invalid_response():
     print("Sorry, that's an invalid response. Try again.")
@@ -63,14 +65,13 @@ def assign_npc_hobbies(hobby_type):  # TODO ----- In rare cases the secondary ho
     return npc_hobbies
 
 
-
 # ----- Player Creator -----
 def name_the_player():
     happy_with_choice = False
     player_name = ""
     while not happy_with_choice:
         player_name = input("What is your name? \n")
-        possible_response = [       "y", "n"]
+        possible_response = ["y", "n"]
         while True:
             response = input(f"Your name is {player_name}, is that correct? \n(y/n) ")
             if response in possible_response:
@@ -86,17 +87,17 @@ def name_the_player():
 
 def choose_starting_traits():
     print(
-    '''
-    There are 3 different traits that help you on your high school adventure:
-    Physique, Focus and Creativity.
-    
-    All clubs have a main trait, and a secondary trait which will help you raise your popularity.
-    - Physique is the main trait of the Sports Club, and the Dance Club.
-    - Focus is the main trait of the Video Game Club, and the Movie Club.
-    - Creativity is the main trait of the Theater Club, and the Arts & Crafts Club
-    
-    You get to start off with 2 points in one trait and 1 point in a second trait.
-    '''
+        '''
+        There are 3 different traits that help you on your high school adventure:
+        Physique, Focus and Creativity.
+        
+        All clubs have a main trait, and a secondary trait which will help you raise your popularity.
+        - Physique is the main trait of the Sports Club, and the Dance Club.
+        - Focus is the main trait of the Video Game Club, and the Movie Club.
+        - Creativity is the main trait of the Theater Club, and the Arts & Crafts Club
+        
+        You get to start off with 2 points in one trait and 1 point in a second trait.
+        '''
     )
     read_delay()
 
@@ -174,7 +175,7 @@ def choose_starting_hobbies():
     def make_decision():
         happy_with_choice = False
         player_hobby = []
-        while happy_with_choice == False:
+        while not happy_with_choice:
             possible_choices = ["1", "2", "3", "4", "5", "6"]
             print("Your choices are:")
             counter = 1
@@ -239,6 +240,59 @@ def popularity_check(player, npc):
     else:
         return False
 
+
+def random_from_list(list_object, start=0):
+    number = randint(start, len(list_object) - 1)
+    return list_object[number]
+
+
+def check_if_possible_answer(possible_answer, input_prompt=""):
+    prompt = input_prompt
+    if prompt == "":
+        prompt = "What's next?"
+    in_answer = False
+    vague_answer = ""
+    while True:
+        og_response = input(prompt + " \n")
+        for answer in possible_answer:
+            if og_response.lower() == answer.lower():
+                return answer
+
+        matched_once = False
+        multiple_matches = False
+        for i in range(len(og_response)):
+            matched_once = False
+            multiple_matches = False
+            for answer in possible_answer:
+                try:
+                    if og_response[:i + 1].lower() == answer[:i + 1].lower():
+                        if not matched_once:
+                            matched_once = True
+                            vague_answer = answer
+                        else:
+                            multiple_matches = True
+                except IndexError:
+                    pass
+
+        if multiple_matches:
+            print("Sorry, I didn't quite get that.")
+        elif matched_once:
+            in_answer = True
+        else:
+            print("Sorry, I didn't quite get that.")
+            new_line()
+
+        while in_answer:
+            yes_or_no = [("yes", "yeah", "yep", "yea", "ye", "y"), ("no", "nope", "nop", "nah", "na", "n")]
+            response = input(f"Did you mean {vague_answer.title()}? \n")
+            if response.lower() in yes_or_no[0]:
+                return vague_answer
+            elif response in yes_or_no[1]:
+                in_answer = False
+                break
+            else:
+                print("Sorry, I didn't quite get that. Try again.")
+                new_line()
 
 
 if __name__ == "__main__":

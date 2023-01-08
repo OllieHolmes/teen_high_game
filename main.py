@@ -2,6 +2,7 @@ import time
 from random import randint
 import gafu
 from gafu import new_line, simple_divider, new_day_divider, read_delay, invalid_response
+from gafu import random_from_list, check_if_possible_answer
 from hobbies import hobby_dict
 import story
 
@@ -23,6 +24,7 @@ class Player:
     popularity = 7
     grades = {"English": 0, "Math": 0, "Science": 0,
               "Physical Education": 0, "Computer Science": 0, "Health Studies": 0}
+    friend_book = []
 
     def repr_hobbies(self, hobby_list):
         message = ""
@@ -91,6 +93,18 @@ class Player:
             self.grades[subject] += score
             print(f"**-- Your grades in {subject} has increased {score} points. --**")
 
+    def add_friend(self, friend):
+        if friend not in self.friend_book:
+            self.friend_book.append(friend)
+
+    def increase_popularity(self, increase=1):
+        self.popularity += increase
+        plural = ""
+        if increase > 1:
+            plural = "s"
+        print(f"**-- Your popularity has increased {increase} point{plural}. --**")
+        new_line()
+
 
 class Student:
     counter = randint(0, 1)
@@ -122,7 +136,7 @@ class StudentNPC(Student):
         self.popularity = self.popularity_list.pop(rand_popularity)
         self.clue_list = []
 
-    friend_score = 0
+    friend_score = 5
     is_friend = False
 
     def add_clue(self, clue):
@@ -161,6 +175,7 @@ class StudentNPC(Student):
     def check_if_friends(self, player):
         if self.friend_score >= 10:
             self.is_friend = True
+            player.add_friend(self)
 
         if self.is_friend:
             return True, True
@@ -263,7 +278,29 @@ def update_most_popular():
 #                                            All Events                                              #
 ######################################################################################################
 
-skipping_class = False
+skipping_class = True
+first_break = True
+first_class_skip = True
+
+
+# ---- Finished ++++++
+def profile_status(player):
+    simple_divider()
+    print("PLAYER PROFILE")
+    new_line()
+    print(f"Your name is {player.name}.\n"
+          f"Your popularity score is: {player.popularity}\n \n"
+          "Your hobbies are:")
+    for hobby in player.hobbies:
+        print(f"  * {hobby}")
+    new_line()
+
+    print("You are friends with:")
+    for friend in player.friend_book:
+        print(f"  * {friend.name[1]} {friend.name[0]}. Hobbies: {friend.clue_list}")
+
+    new_line()
+    read_delay()
 
 
 # ---- Finished ++++++
@@ -522,7 +559,7 @@ def gymnasium_event(player):
     # ---- Enter the Gym
     new_line()
     print("You walk into the gym. It smells like teenage sweat, \n"
-          "and you can hear the telltale sound of rubber shoes on linoleum.")
+          "but luckily there's no one else here.")
     new_line()
     # ---- Raise Physique trait Event
 
@@ -530,11 +567,13 @@ def gymnasium_event(player):
         print("You line yourself up along the basketball court and do a few laps of high intensity laps.")
         player.increase_trait("Physique", 1)
     elif skipping_class:
+        print("Luckily the PE classes are all outside this time of year.")
         print("You make your way over to the free-weights and do a full workout set.")
         player.increase_trait("Physique", 2)
 
     skipping_class = False
     read_delay()
+
 
 # ---- Finished ++++++
 def art_room_event(player):
@@ -558,6 +597,52 @@ def art_room_event(player):
     read_delay()
 
 
+# ---- Finished ++++++
+def hallway_event(player):
+    global skipping_class
+    print("You take a stroll down the hallway and you see a few people that look approachable.")
+    hallway_number = randint(4, 6)
+    hallway_people = []
+    for n in range(hallway_number):
+        while True:
+            random_person = randint(0, len(npc_list) - 1)
+            if npc_list[random_person] not in hallway_people:
+                hallway_people.append(npc_list[random_person])
+                break
+    new_line()
+    print("Who would you want to talk to? ")
+
+    def socialize_event(person):
+        person.check_if_friends(player)
+        print(f"You walk up to {person.name[1]}.")
+        if person.is_friend:
+            print("They smile as you approach and call you over.")
+            print("They introduce you to a group of people they were chatting with.")
+            new_line()
+            player.increase_popularity(2)
+        else:
+            print(f"You talk about your respective hobbies, and {person.name[1]} gets really into it.")
+            print("It was a nice bonding experience.")
+            new_line()
+            person.add_clue(person.hobbies[0])
+            person.increase_friend_score(5)
+            player.increase_popularity(1)
+
+    while True:
+        counter = 1
+        possible_answers = [str(x + 1) for x in range(len(hallway_people))]
+        for person in hallway_people:
+            print(f" ({counter}). {person}")
+            counter += 1
+        response = input("")
+        if response in possible_answers:
+            socialize_event(hallway_people[int(response) - 1])
+            break
+        else:
+            print("Sorry, that's an invalid choice. Try again.")
+            new_line()
+
+
 # ---- Not Finished
 def cafeteria_event(player, type_of_meal):
     update_most_popular()
@@ -565,11 +650,93 @@ def cafeteria_event(player, type_of_meal):
     new_line()
 
 
-# ---- Not Started
-def break_event(player, type_of_break):
+# ---- Finished ++++++
+def break_event(player):
+    global skipping_class
+    global first_break
+    global first_class_skip
     update_most_popular()
-    print(f"           #########################  {type_of_break}  #########################")
+    if skipping_class:
+        type_of_break = "  Skipping Class  "
+    else:
+        type_of_break = "####  Recess  ####"
+    print(f"         #########################{type_of_break}#########################")
     new_line()
+    if not skipping_class:
+        print("It's recess and you head to your locker.")
+        if first_break:
+            new_line()
+            print("You can go to the Gym, go to the Art Room or study at the Library.")
+            print("Or you could socialize and make friends in the Hallway.")
+            new_line()
+            print("You can also check your Profile to see how you're doing in your classes, \n"
+                  "your trait scores and friendship progress.")
+            first_break = False
+        print("(Type \"help\" for options)")
+        new_line()
+    #         while True:
+    #             possible_answers = ["gym", "art room", "library", "hallway", "socialize", "profile", "status", "help"]
+    #             prompt = "What would you like to do?"
+    #             final_answer = check_if_possible_answer(possible_answers, prompt)
+    #             if final_answer == "gym":
+    #                 gymnasium_event(player)
+    #                 break
+    #             elif final_answer == "art room":
+    #                 art_room_event(player)
+    #                 break
+    #             elif final_answer == "library":
+    #                 library_event(player)
+    #                 break
+    #             elif final_answer == "hallway" or final_answer == "socialize":
+    #                 print("Hallway event happens, which isn't coded yet.")
+    #                 # break
+    #             elif final_answer == "profile" or final_answer == "status":
+    #                 profile_status(player)
+    #             elif final_answer == "help":
+    #                 print("""
+    # Your can visit:
+    # Gym
+    # Art Room
+    # Library
+    # Hallway
+    #
+    # or you can check your Profile to see your Status""")
+    elif skipping_class:
+        print("You're supposed to be in class, but here you are roaming the halls.")
+        if first_class_skip:
+            new_line()
+            print("As you walk down the deserted hallway, the only sound echoing through \n"
+                  "the empty corridors is the tapping of your shoes on the floor. \n"
+                  "You can feel the adrenaline pumping through your veins as you try to avoid being caught by a teacher.")
+            new_line()
+            first_class_skip = False
+    while True:
+        possible_answers = ["gym", "art room", "library", "hallway", "socialize", "profile", "status", "help"]
+        prompt = "What would you like to do?"
+        final_answer = check_if_possible_answer(possible_answers, prompt)
+        if final_answer == "gym":
+            gymnasium_event(player)
+            break
+        elif final_answer == "art room":
+            art_room_event(player)
+            break
+        elif final_answer == "library":
+            library_event(player)
+            break
+        elif final_answer == "hallway" or final_answer == "socialize":
+            hallway_event(player)
+            break
+        elif final_answer == "profile" or final_answer == "status":
+            profile_status(player)
+        elif final_answer == "help":
+            print("""
+Your can visit:
+Gym
+Art Room
+Library
+Hallway
+
+or you can check your Profile to see your Status""")
 
 
 class Game:
@@ -611,11 +778,10 @@ class Game:
         test_player = Player("Steven", {"physique": 4, "focus": 4, "creativity": 4}, ["American Football"])
         test_list = gafu.assign_npc_hobbies("sports")
 
-        break_event(test_player, "Recess")
-        classroom_event(test_player, "Math")
-        library_event(test_player)
-        gymnasium_event(test_player)
-        art_room_event(test_player)
+        break_event(test_player)
+        test_player.add_friend(sport_npc_1)
+        break_event(test_player)
+
 
 if __name__ == "__main__":
     Game.run()
