@@ -20,6 +20,6 @@ def welcome_to_teen_high(player_name):
     read_delay()
 
 def start_of_day(day):
-    print(f"It's the start of Day {str(day)}. What do you want to do?")
-    new_line()
+    print(f"It's the start of Day {str(day)}.")
+    read_delay()
 

@@ -21,7 +21,7 @@ class Player:
         self.traits = traits
         self.hobbies = [hobby]
 
-    popularity = 7
+    popularity = 0
     grades = {"English": 0, "Math": 0, "Science": 0,
               "Physical Education": 0, "Computer Science": 0, "Health Studies": 0}
     friend_book = []
@@ -110,7 +110,6 @@ class Student:
     counter = randint(0, 1)
 
     def __init__(self):
-        xx = False
         if self.counter % 2 == 0:
             xx = False
         else:
@@ -278,7 +277,7 @@ def update_most_popular():
 #                                            All Events                                              #
 ######################################################################################################
 
-skipping_class = True
+skipping_class = False
 first_break = True
 first_class_skip = True
 
@@ -290,9 +289,13 @@ def profile_status(player):
     new_line()
     print(f"Your name is {player.name}.\n"
           f"Your popularity score is: {player.popularity}\n \n"
-          "Your hobbies are:")
+          "Your grade progress:")
+    for grade, score in player.grades.items():
+        print(f" * {grade}: {str(score)}")
+    new_line()
+    print("Your hobbies are:")
     for hobby in player.hobbies:
-        print(f"  * {hobby}")
+        print(f"  * {hobby[1]}")
     new_line()
 
     print("You are friends with:")
@@ -303,7 +306,7 @@ def profile_status(player):
     read_delay()
 
 
-# ---- Finished ++++++
+# ---- Finished ++++++ TODO --- Make Physical Education different from the rest - eventually all classes are individual.
 def classroom_event(player, subject):
     global skipping_class
     update_most_popular()
@@ -315,7 +318,7 @@ def classroom_event(player, subject):
     new_line()
     print(
         f"Do you want to sit next to \n(1) {classroom[0]} \n(2) {classroom[1]} \n(3) {classroom[2]} \n(4) sit by yourself?")
-    seat = ""
+
     # --- Choose seat ---- #
     while True:
         possible_answers = ["1", "2", "3", "4"]
@@ -391,7 +394,6 @@ def classroom_event(player, subject):
 
     read_delay()
     simple_divider()
-    skipping_class = False
 
 
 # ---- Finished ++++++
@@ -408,7 +410,8 @@ def library_event(player):
         penalty_msg = ""
 
         while True:
-            response = input(f"Do you want to ask {random_npc} to study with you? \n(y/n) ")
+            response = input(
+                f"Do you want to ask {random_npc.name[1]} {random_npc.name[0]} to study with you? \n(y/n) ")
             possible_answers = ["y", "n"]
             if response in possible_answers:
                 if response == "y":  # ---- Player chooses to ask the NPC
@@ -475,7 +478,6 @@ def library_event(player):
             print("You find a quiet part of the library and open up your textbooks. It's a slow read.")
             player.increase_grade(subject, 5)
 
-    library_event = 0
     # ---- Enter the library
     new_line()
     print("You come into the library. It has a calm and quiet atmosphere.")
@@ -550,7 +552,6 @@ def library_event(player):
             player.increase_trait("Focus", 2)
 
     read_delay()
-    skipping_class = False
 
 
 # ---- Finished ++++++
@@ -571,7 +572,6 @@ def gymnasium_event(player):
         print("You make your way over to the free-weights and do a full workout set.")
         player.increase_trait("Physique", 2)
 
-    skipping_class = False
     read_delay()
 
 
@@ -593,15 +593,14 @@ def art_room_event(player):
         print("You find some clay and sit down to sculpt your next masterpiece.")
         player.increase_trait("Creativity", 2)
 
-    skipping_class = False
     read_delay()
 
 
-# ---- Finished ++++++
+# ---- Finished ++++++ TODO --- Add Skipping Class event for Hallway
 def hallway_event(player):
     global skipping_class
     print("You take a stroll down the hallway and you see a few people that look approachable.")
-    hallway_number = randint(4, 6)
+    hallway_number = randint(2, 4)
     hallway_people = []
     for n in range(hallway_number):
         while True:
@@ -644,14 +643,14 @@ def hallway_event(player):
 
 
 # ---- Not Finished
-def cafeteria_event(player, type_of_meal):
-    update_most_popular()
-    print(f"           #########################  {type_of_meal} Class  #########################")
-    new_line()
+# def cafeteria_event(player, type_of_meal):
+#     update_most_popular()
+#     print(f"           #########################  {type_of_meal} Class  #########################")
+#     new_line()
 
 
 # ---- Finished ++++++
-def break_event(player):
+def break_event(player, last_subject):
     global skipping_class
     global first_break
     global first_class_skip
@@ -738,6 +737,97 @@ Hallway
 
 or you can check your Profile to see your Status""")
 
+    if not skipping_class:
+        next_subject = ""
+        print("Your next class is about to start.")
+        possible_subjects = ["Math", "Science", "Health Studies", "English", "Computer Science", "Physical Education"]
+        for i in range(len(possible_subjects)):
+            try:
+                if last_subject == possible_subjects[i]:
+                    next_subject = possible_subjects[i + 1]
+            except IndexError:
+                next_subject = possible_subjects[0]
+        while True:
+            possible_answers = ["class", "skip"]
+            final_answer = check_if_possible_answer(possible_answers, "(Class / Skip)")
+            if final_answer == "skip":
+                skipping_class = True
+                break_event(player, next_subject)
+                break
+            else:
+                classroom_event(player, next_subject)
+                break
+    else:
+        skipping_class = False
+
+
+# ---- Finished ++++++
+def day_event(player, day):
+    new_day_divider()
+    story.start_of_day(day)
+    break_event(player, "Physical Education")
+    break_event(player, "Math")
+    break_event(player, "Science")
+    break_event(player, "Health Studies")
+    break_event(player, "English")
+    break_event(player, "Computer Science")
+
+
+def final_score_event(player):
+    # ---- Calculate final score
+    grade_score = 0
+    friend_score = 0
+    trait_score = 0
+    for trait, score in player.traits.items():
+        trait_score += score
+    personality_score = player.popularity + (trait_score * 2)
+
+    for subject, score in player.grades.items():
+        for grade, threshold in grades_dict.items():
+            if score >= threshold:
+                if grade == "A":
+                    grade_score += 20
+                    player.grades[subject] = grade
+                    break
+                elif grade == "B":
+                    grade_score += 15
+                    player.grades[subject] = grade
+                    break
+                elif grade == "C":
+                    grade_score += 10
+                    player.grades[subject] = grade
+                    break
+                elif grade == "F":
+                    grade_score += -15
+                    player.grades[subject] = grade
+                    break
+
+    for friend in player.friend_book:
+        friend_score += 10 + friend.popularity
+
+    final_score = personality_score + friend_score + grade_score
+
+    # ---- Present final stats
+    total_friends = len(player.friend_book)
+
+    print("It's time to see how you've done.")
+    new_line()
+    print("Your final grades are:")
+    for grade, score in player.grades.items():
+        print(f" * {grade}: {str(score)}")
+    print(f"    *------- Grade score = {grade_score} -------*")
+    new_line()
+    print(f"You made {total_friends} friends:")
+    for friend in player.friend_book:
+        print(f"  * {friend.name[1]} {friend.name[0]}. Hobbies: {friend.clue_list}")
+    print(f"    *------- Friend score = {friend_score} -------*")
+    new_line()
+    print("Your final score is...")
+    read_delay()
+    print(f"    *------- FINAL SCORE = {final_score} -------*")
+    new_line()
+    print("             Thanks for playing!")
+
 
 class Game:
 
@@ -759,28 +849,33 @@ class Game:
         # ----- The Game Starts Here ----- #
 
         # ----- Create the Player Character
-        # player_name = gafu.name_the_player()
-        # story.welcome_to_teen_high(player_name)
-        # starting_traits = gafu.choose_starting_traits()
-        # simple_divider()
-        # starting_hobby = gafu.choose_starting_hobbies()
-        # player_1 = Player(player_name, starting_traits, starting_hobby)  # ---- Instancing the player
-        #
-        # print(player_1)
-        # simple_divider()
-        #
-        #
-        # # ----- Introduction Message
-        #
-        # new_day_divider()
-        # story.start_of_day(1)
+        player_name = gafu.name_the_player()
+        story.welcome_to_teen_high(player_name)
+        starting_traits = gafu.choose_starting_traits()
+        simple_divider()
+        starting_hobby = gafu.choose_starting_hobbies()
+        player_1 = Player(player_name, starting_traits, starting_hobby)  # ---- Instancing the player
 
-        test_player = Player("Steven", {"physique": 4, "focus": 4, "creativity": 4}, ["American Football"])
-        test_list = gafu.assign_npc_hobbies("sports")
+        print(player_1)
+        simple_divider()
 
-        break_event(test_player)
-        test_player.add_friend(sport_npc_1)
-        break_event(test_player)
+        for n in range(5):
+            day_event(player_1, n + 1)
+
+        final_score_event(player_1)
+
+        # ---- Play again?
+        while True:
+            response = input("Would you like to play again? \n")
+            yes_or_no = [("yes", "yeah", "yep", "yea", "ye", "y"), ("no", "nope", "nop", "nah", "na", "n")]
+            if response.lower() in yes_or_no[0]:
+                Game.run()
+                break
+            elif response in yes_or_no[1]:
+                break
+            else:
+                print("Sorry, I didn't quite get that. Try again.")
+                new_line()
 
 
 if __name__ == "__main__":
