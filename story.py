@@ -1,4 +1,3 @@
-import gafu
 from gafu import simple_divider, new_day_divider, new_line, read_delay
 import time
 
